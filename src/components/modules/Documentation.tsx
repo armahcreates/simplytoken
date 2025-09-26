@@ -1,20 +1,22 @@
+'use client'
+
 import { useState } from 'react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Stepper } from '@/components/Stepper';
-import { 
-  ArrowLeft, 
-  ArrowRight, 
-  Search, 
-  FileText, 
-  Download, 
+import {
+  ArrowLeft,
+  ArrowRight,
+  Search,
+  FileText,
+  Download,
   Eye,
   Upload,
   Filter
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import {
   Select,
   SelectContent,
@@ -95,9 +97,9 @@ export function Documentation() {
   return (
     <div className="space-y-6">
       <div className="flex items-center text-sm text-muted-foreground">
-        <Link to="/" className="hover:text-primary">Dashboard</Link>
+        <Link href="/" className="hover:text-primary">Dashboard</Link>
         <ArrowRight className="mx-2 h-4 w-4" />
-        <Link to="/asset-readiness" className="hover:text-primary">Asset Readiness</Link>
+        <Link href="/asset-readiness" className="hover:text-primary">Asset Readiness</Link>
         <ArrowRight className="mx-2 h-4 w-4" />
         <span className="text-foreground">Documentation</span>
       </div>
@@ -205,13 +207,13 @@ export function Documentation() {
           {/* Navigation */}
           <div className="flex flex-col sm:flex-row justify-between gap-4 pt-6 border-t">
             <Button variant="outline" asChild className="w-full sm:w-auto">
-              <Link to="/asset-readiness/regulatory-compliance">
+              <Link href="/asset-readiness/regulatory-compliance">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Previous: Regulatory Compliance
               </Link>
             </Button>
             <Button asChild className="w-full sm:w-auto">
-              <Link to="/asset-readiness/dashboard">
+              <Link href="/asset-readiness/dashboard">
                 Continue to Dashboard
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>

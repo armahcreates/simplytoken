@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Input } from '@/components/ui/input';
+import { MetricsDashboard } from './MetricsDashboard';
 
 export function Header() {
   return (
@@ -34,7 +35,9 @@ export function Header() {
         <HelpCircle className="h-5 w-5" />
         <span className="sr-only">Help</span>
       </Button>
-      
+
+      <MetricsDashboard />
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="icon" className="overflow-hidden rounded-full">

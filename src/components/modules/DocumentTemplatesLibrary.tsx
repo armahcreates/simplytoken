@@ -1,4 +1,7 @@
+'use client'
+
 import React from 'react';
+import Link from 'next/link';
 import {
   Search,
   Upload,
@@ -10,7 +13,6 @@ import {
   Eye,
   Download,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -81,9 +83,9 @@ export function DocumentTemplatesLibrary() {
   return (
     <div className="space-y-6">
       <div className="flex items-center text-sm text-muted-foreground">
-        <Link to="/" className="hover:text-primary">Dashboard</Link>
+        <Link href="/" className="hover:text-primary">Dashboard</Link>
         <ArrowRight className="mx-2 h-4 w-4" />
-        <Link to="/asset-readiness" className="hover:text-primary">Asset Readiness</Link>
+        <Link href="/asset-readiness" className="hover:text-primary">Asset Readiness</Link>
         <ArrowRight className="mx-2 h-4 w-4" />
         <span className="text-foreground">Document Templates</span>
       </div>

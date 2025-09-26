@@ -1,4 +1,6 @@
-import { Link } from 'react-router-dom';
+'use client'
+
+import Link from 'next/link';
 import { Stepper } from '@/components/Stepper';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -58,9 +60,9 @@ export function RegulatoryCompliance() {
   return (
     <div className="space-y-6">
       <div className="flex items-center text-sm text-muted-foreground">
-        <Link to="/" className="hover:text-primary">Dashboard</Link>
+        <Link href="/" className="hover:text-primary">Dashboard</Link>
         <ArrowRight className="mx-2 h-4 w-4" />
-        <Link to="/asset-readiness" className="hover:text-primary">Asset Readiness</Link>
+        <Link href="/asset-readiness" className="hover:text-primary">Asset Readiness</Link>
         <ArrowRight className="mx-2 h-4 w-4" />
         <span className="text-foreground">Regulatory Compliance</span>
       </div>
@@ -231,10 +233,10 @@ export function RegulatoryCompliance() {
         <Button variant="ghost" className="w-full sm:w-auto"><Save className="mr-2 h-4 w-4" /> Save Progress</Button>
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <Button variant="outline" asChild className="w-full sm:w-auto">
-            <Link to="/asset-readiness"><ArrowLeft className="mr-2 h-4 w-4" /> Previous</Link>
+            <Link href="/asset-readiness"><ArrowLeft className="mr-2 h-4 w-4" /> Previous</Link>
           </Button>
           <Button asChild className="w-full sm:w-auto">
-            <Link to="/asset-readiness/documentation">Continue <ArrowRight className="ml-2 h-4 w-4" /></Link>
+            <Link href="/asset-readiness/documentation">Continue <ArrowRight className="ml-2 h-4 w-4" /></Link>
           </Button>
         </div>
       </div>

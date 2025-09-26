@@ -1,5 +1,8 @@
+'use client'
+
 import * as React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,7 +13,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Eye, EyeOff, Mail, Lock, User, Building, ArrowRight, CheckCircle, Info } from 'lucide-react';
 
 export function Signup() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
   const [formData, setFormData] = React.useState({
@@ -87,7 +90,7 @@ export function Signup() {
     setTimeout(() => {
       setIsLoading(false);
       // Navigate to onboarding after successful signup
-      navigate('/onboarding');
+      router.push('/onboarding');
     }, 2000);
   };
 
@@ -96,7 +99,7 @@ export function Signup() {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      navigate('/onboarding');
+      router.push('/onboarding');
     }, 1500);
   };
 
@@ -105,7 +108,7 @@ export function Signup() {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      navigate('/onboarding');
+      router.push('/onboarding');
     }, 1500);
   };
 
@@ -339,11 +342,11 @@ export function Signup() {
                       className={`text-sm font-normal ${errors.agreeToTerms ? 'text-red-600' : ''}`}
                     >
                       I agree to the{' '}
-                      <Link to="/terms" className="text-blue-600 hover:text-blue-500 underline">
+                      <Link href="/terms" className="text-blue-600 hover:text-blue-500 underline">
                         Terms of Service
                       </Link>{' '}
                       and{' '}
-                      <Link to="/privacy" className="text-blue-600 hover:text-blue-500 underline">
+                      <Link href="/privacy" className="text-blue-600 hover:text-blue-500 underline">
                         Privacy Policy
                       </Link>
                     </Label>
@@ -392,7 +395,7 @@ export function Signup() {
               <p className="text-sm text-muted-foreground">
                 Already have an account?{' '}
                 <Link 
-                  to="/login" 
+                  href="/login" 
                   className="text-blue-600 hover:text-blue-500 font-medium transition-colors"
                 >
                   Sign in

@@ -1,5 +1,8 @@
+'use client'
+
 import * as React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,7 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import { Eye, EyeOff, Mail, Lock, ArrowRight, CheckCircle } from 'lucide-react';
 
 export function Login() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [showPassword, setShowPassword] = React.useState(false);
   const [formData, setFormData] = React.useState({
     email: '',
@@ -54,7 +57,7 @@ export function Login() {
     setTimeout(() => {
       setIsLoading(false);
       // Navigate to dashboard on successful login
-      navigate('/');
+      router.push('/');
     }, 1500);
   };
 
@@ -63,7 +66,7 @@ export function Login() {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      navigate('/');
+      router.push('/');
     }, 1500);
   };
 
@@ -72,7 +75,7 @@ export function Login() {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      navigate('/');
+      router.push('/');
     }, 1500);
   };
 
@@ -165,7 +168,7 @@ export function Login() {
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Password</Label>
                   <Link 
-                    to="/forgot-password" 
+                    href="/forgot-password" 
                     className="text-sm text-blue-600 hover:text-blue-500 transition-colors"
                   >
                     Forgot password?
@@ -226,7 +229,7 @@ export function Login() {
               <p className="text-sm text-muted-foreground">
                 Don't have an account?{' '}
                 <Link 
-                  to="/signup" 
+                  href="/signup" 
                   className="text-blue-600 hover:text-blue-500 font-medium transition-colors"
                 >
                   Sign up for free
@@ -265,11 +268,11 @@ export function Login() {
         <div className="text-center text-xs text-muted-foreground">
           <p>
             By signing in, you agree to our{' '}
-            <Link to="/terms" className="underline hover:text-foreground">
+            <Link href="/terms" className="underline hover:text-foreground">
               Terms of Service
             </Link>{' '}
             and{' '}
-            <Link to="/privacy" className="underline hover:text-foreground">
+            <Link href="/privacy" className="underline hover:text-foreground">
               Privacy Policy
             </Link>
           </p>

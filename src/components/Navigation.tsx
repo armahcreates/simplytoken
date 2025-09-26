@@ -1,4 +1,7 @@
-import { useLocation, Link } from 'react-router-dom';
+'use client'
+
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 const navigationItems = [
@@ -10,18 +13,18 @@ const navigationItems = [
 ];
 
 export function Navigation() {
-  const location = useLocation();
+  const pathname = usePathname();
 
   return (
     <nav className="bg-white border-b border-gray-200">
       <div className="container mx-auto px-4">
         <div className="flex space-x-8">
           {navigationItems.map((item) => {
-            const isActive = location.pathname.startsWith(item.href);
+            const isActive = pathname.startsWith(item.href);
             return (
               <Link
                 key={item.name}
-                to={item.href}
+                href={item.href}
                 className={cn(
                   'relative py-4 px-1 text-sm font-medium transition-colors',
                   isActive

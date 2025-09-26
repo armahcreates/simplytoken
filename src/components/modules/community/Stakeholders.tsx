@@ -123,7 +123,8 @@ export function Stakeholders() {
           </Button>
           <Button size="sm" className="w-full sm:w-auto">
             <UserPlus className="mr-2 h-4 w-4" />
-            <span className="hidden sm:inline">Add Stakeholder</span>
+            <span className="hidden sm:inline">Activate Your Investor Whitelist</span>
+            <span className="sm:hidden">Activate Whitelist</span>
           </Button>
         </div>
       </div>

@@ -1,8 +1,10 @@
+'use client'
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { 
   Download, 
   Edit, 
@@ -37,9 +39,9 @@ export function AssetReadinessDashboard() {
   return (
     <div className="space-y-6">
        <div className="flex items-center text-sm text-muted-foreground">
-        <Link to="/" className="hover:text-primary">Dashboard</Link>
+        <Link href="/" className="hover:text-primary">Dashboard</Link>
         <ArrowRight className="mx-2 h-4 w-4" />
-        <Link to="/asset-readiness" className="hover:text-primary">Asset Readiness</Link>
+        <Link href="/asset-readiness" className="hover:text-primary">Asset Readiness</Link>
         <ArrowRight className="mx-2 h-4 w-4" />
         <span className="text-foreground">Readiness Dashboard</span>
       </div>
@@ -62,8 +64,8 @@ export function AssetReadinessDashboard() {
           </Button>
           <Button className="w-full sm:w-auto">
             <Edit className="mr-2 h-4 w-4" />
-            <span className="hidden sm:inline">Edit Assessment</span>
-            <span className="sm:hidden">Edit</span>
+            <span className="hidden sm:inline">Launch Compliance Review</span>
+            <span className="sm:hidden">Review</span>
           </Button>
         </div>
       </div>
@@ -152,7 +154,7 @@ export function AssetReadinessDashboard() {
                 Access legal agreements, disclosures, and other standardized documents for your tokenization process.
               </p>
               <Button className="w-full" asChild>
-                <Link to="/asset-readiness/document-templates">
+                <Link href="/asset-readiness/document-templates">
                   Go to Library <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
@@ -162,7 +164,7 @@ export function AssetReadinessDashboard() {
       </div>
       <div className="flex justify-start">
         <Button variant="outline" asChild>
-          <Link to="/asset-readiness/documentation">
+          <Link href="/asset-readiness/documentation">
             <ArrowLeft className="mr-2 h-4 w-4" /> Previous
           </Link>
         </Button>

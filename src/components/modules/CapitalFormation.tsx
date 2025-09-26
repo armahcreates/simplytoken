@@ -1,4 +1,7 @@
-import { Link, useLocation } from 'react-router-dom';
+'use client'
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FundraisingProgress } from '@/components/modules/capital-formation/FundraisingProgress';
@@ -20,8 +23,8 @@ const subNavigation = [
 ];
 
 export function CapitalFormation() {
-  const location = useLocation();
-  const currentPath = location.pathname;
+  const pathname = usePathname();
+  const currentPath = pathname;
 
   let content;
   switch (currentPath) {
@@ -55,7 +58,7 @@ export function CapitalFormation() {
             return (
               <Link
                 key={item.name}
-                to={item.href}
+                href={item.href}
                 className={cn(
                   'flex items-center gap-2 rounded-lg px-3 py-2 text-sm whitespace-nowrap transition-all hover:text-primary',
                   isActive && 'bg-muted text-primary'
@@ -78,7 +81,7 @@ export function CapitalFormation() {
             return (
               <Link
                 key={item.name}
-                to={item.href}
+                href={item.href}
                 className={cn(
                   'flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary',
                   isActive && 'bg-muted text-primary'

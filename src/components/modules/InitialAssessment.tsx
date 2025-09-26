@@ -1,4 +1,6 @@
-import { Link } from 'react-router-dom';
+'use client'
+
+import Link from 'next/link';
 import { Stepper } from '@/components/Stepper';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +12,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { FormSection } from '@/components/FormSection';
 import { ArrowRight, Save } from 'lucide-react';
+import { HelpTooltip } from '@/components/OnboardingOverlay';
 
 const steps = ["Initial Assessment", "Regulatory Compliance", "Documentation", "Readiness Dashboard"];
 
@@ -17,7 +20,7 @@ export function InitialAssessment() {
   return (
     <div className="space-y-6">
       <div className="flex items-center text-sm text-muted-foreground">
-        <Link to="/" className="hover:text-primary">Dashboard</Link>
+        <Link href="/" className="hover:text-primary">Dashboard</Link>
         <ArrowRight className="mx-2 h-4 w-4" />
         <span className="text-foreground">Asset Readiness</span>
       </div>
@@ -175,7 +178,9 @@ export function InitialAssessment() {
               </div>
               <div className="grid md:grid-cols-2 gap-x-6 gap-y-4">
                 <div className="space-y-4">
-                  <Label>Target investor profile (Select all that apply)</Label>
+                  <HelpTooltip content="This threshold ensures only accredited investors proceed through your tokenization process">
+                    <Label>Target investor profile (Select all that apply)</Label>
+                  </HelpTooltip>
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2"><Checkbox id="profile-accredited" /><Label htmlFor="profile-accredited">Accredited investors</Label></div>
                     <div className="flex items-center space-x-2"><Checkbox id="profile-retail" /><Label htmlFor="profile-retail">Retail investors</Label></div>
@@ -245,7 +250,7 @@ export function InitialAssessment() {
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <Button variant="outline" className="w-full sm:w-auto">Cancel</Button>
               <Button asChild className="w-full sm:w-auto">
-                <Link to="/asset-readiness/regulatory-compliance">Continue <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                <Link href="/asset-readiness/regulatory-compliance">Continue <ArrowRight className="ml-2 h-4 w-4" /></Link>
               </Button>
             </div>
           </div>

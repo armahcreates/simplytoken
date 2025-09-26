@@ -213,7 +213,7 @@ export function ModuleConfiguration({ data, role, onUpdate, onNext, onPrevious }
                                 <SelectValue placeholder={`Select ${settingKey.replace(/([A-Z])/g, ' $1').toLowerCase()}`} />
                               </SelectTrigger>
                               <SelectContent>
-                                {options.map((option) => (
+                                {options.map((option: string) => (
                                   <SelectItem key={option} value={option.toLowerCase().replace(/\s+/g, '-')}>
                                     {option}
                                   </SelectItem>
