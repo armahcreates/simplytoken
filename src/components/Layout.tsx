@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -20,6 +20,7 @@ import {
 import { Header } from './Header';
 import { ProgressBreadcrumb } from './ProgressBreadcrumb';
 import { OnboardingOverlay } from './OnboardingOverlay';
+import { useJourney } from '@/contexts/JourneyContext';
 import {
   Building2,
   Users,
@@ -85,33 +86,14 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const pathname = usePathname();
-  const [completedPhases, setCompletedPhases] = useState<string[]>([]);
-  const [isFirstLogin, setIsFirstLogin] = useState(true); // In real app, this would come from user state
-
-  // Determine which phases to show based on completion logic
-  const getVisiblePhases = () => {
-    if (completedPhases.length === 0) {
-      return phases.slice(0, 1); // Only show SimplyReady at start
-    }
-    return phases.slice(0, completedPhases.length + 1);
-  };
-
-  const getArchivedPhases = () => {
-    return phases.filter(phase => completedPhases.includes(phase.id));
-  };
+  const { journeyState, dismissFirstLogin, getVisiblePhases, getArchivedPhases } = useJourney();
 
   const visiblePhases = getVisiblePhases();
   const archivedPhases = getArchivedPhases();
 
-  const markPhaseComplete = (phaseId: string) => {
-    if (!completedPhases.includes(phaseId)) {
-      setCompletedPhases([...completedPhases, phaseId]);
-    }
-  };
-
   return (
     <SidebarProvider>
-      <OnboardingOverlay isFirstLogin={isFirstLogin} />
+      <OnboardingOverlay isFirstLogin={journeyState.isFirstLogin} onDismiss={dismissFirstLogin} />
       <Sidebar>
         <SidebarHeader>
           <div className="flex items-center justify-center py-4">
@@ -144,19 +126,22 @@ export function Layout({ children }: LayoutProps) {
             <SidebarGroupLabel>Journey Phases</SidebarGroupLabel>
             <SidebarMenu>
               {visiblePhases.map((phase) => {
-                const isActive = pathname.startsWith(phase.href);
-                const isCompleted = completedPhases.includes(phase.id);
+                const phaseConfig = phases.find(p => p.id === phase.id);
+                if (!phaseConfig) return null;
+
+                const isActive = pathname.startsWith(phaseConfig.href);
+                const isCompleted = phase.completed;
                 return (
                   <SidebarMenuItem key={phase.id}>
-                    <Link href={phase.href} className="w-full">
+                    <Link href={phaseConfig.href} className="w-full">
                       <SidebarMenuButton
                         isActive={isActive}
-                        tooltip={{children: `${phase.name}: ${phase.description}`}}
+                        tooltip={{children: `${phaseConfig.name}: ${phaseConfig.description}`}}
                         className={isCompleted ? 'bg-green-50 text-green-700' : ''}
                       >
-                        <phase.icon className={isCompleted ? 'text-green-500' : ''} />
+                        <phaseConfig.icon className={isCompleted ? 'text-green-500' : ''} />
                         <span className="flex items-center gap-2">
-                          {phase.name}
+                          {phaseConfig.name}
                           {isCompleted && <Circle className="w-2 h-2 fill-current text-green-500" />}
                         </span>
                       </SidebarMenuButton>
@@ -174,16 +159,21 @@ export function Layout({ children }: LayoutProps) {
               <SidebarGroup>
                 <SidebarGroupLabel>Archive</SidebarGroupLabel>
                 <SidebarMenu>
-                  {archivedPhases.map((phase) => (
-                    <SidebarMenuItem key={`archived-${phase.id}`}>
-                      <Link href={phase.href} className="w-full">
-                        <SidebarMenuButton tooltip={{children: `${phase.name}: ${phase.description}`}}>
-                          <Archive className="w-4 h-4" />
-                          <span>{phase.name}</span>
-                        </SidebarMenuButton>
-                      </Link>
-                    </SidebarMenuItem>
-                  ))}
+                  {archivedPhases.map((phase) => {
+                    const phaseConfig = phases.find(p => p.id === phase.id);
+                    if (!phaseConfig) return null;
+
+                    return (
+                      <SidebarMenuItem key={`archived-${phase.id}`}>
+                        <Link href={phaseConfig.href} className="w-full">
+                          <SidebarMenuButton tooltip={{children: `${phaseConfig.name}: ${phaseConfig.description}`}}>
+                            <Archive className="w-4 h-4" />
+                            <span>{phaseConfig.name}</span>
+                          </SidebarMenuButton>
+                        </Link>
+                      </SidebarMenuItem>
+                    );
+                  })}
                 </SidebarMenu>
               </SidebarGroup>
             </>
@@ -214,9 +204,11 @@ export function Layout({ children }: LayoutProps) {
                 </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-                <SidebarMenuButton tooltip={{children: "Logout"}}>
+                <SidebarMenuButton tooltip={{children: "Logout"}} asChild>
+                  <a href="/login">
                     <LogOut />
                     <span>Logout</span>
+                  </a>
                 </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

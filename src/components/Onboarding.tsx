@@ -152,13 +152,24 @@ export function Onboarding() {
         );
       case 5:
         return (
-          <TeamManagement 
+          <TeamManagement
             data={onboardingData.team}
             onUpdate={(data: Array<{email: string; role: string; permissions: string[]}>) => updateOnboardingData({ team: data })}
             onPrevious={handlePrevious}
             onComplete={() => {
               setCompletedSteps(prev => [...prev, currentStep]);
-              // Handle completion - redirect to dashboard
+              // Mark onboarding as complete in localStorage
+              const storedUser = localStorage.getItem('simplytoken_user');
+              if (storedUser) {
+                try {
+                  const user = JSON.parse(storedUser);
+                  user.hasCompletedOnboarding = true;
+                  localStorage.setItem('simplytoken_user', JSON.stringify(user));
+                } catch (error) {
+                  console.error('Failed to update user onboarding status:', error);
+                }
+              }
+              // Redirect to dashboard
               window.location.href = '/';
             }}
           />

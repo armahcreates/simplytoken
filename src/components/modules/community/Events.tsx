@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { DayPicker, type DayContentProps } from 'react-day-picker';
+import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { format, addMonths, subMonths } from 'date-fns';
 import { faker } from '@faker-js/faker';
@@ -65,23 +65,6 @@ const StatusBadge = ({ status }: { status: string }) => {
 
 export function Events() {
   const [month, setMonth] = React.useState(new Date(2023, 6, 1));
-
-  const CustomDayContent = (props: DayContentProps) => {
-    const dayEvents = events.filter(e => e.date.toDateString() === props.date.toDateString());
-
-    return (
-        <div className="relative">
-            <span>{props.date.getDate()}</span>
-            {dayEvents.length > 0 && (
-                <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-1">
-                    {dayEvents.map(event => (
-                        <div key={event.title} className={cn("h-1.5 w-1.5 rounded-full", event.color)}></div>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-  };
   
   return (
     <div className="space-y-6 pt-4">
@@ -120,11 +103,7 @@ export function Events() {
                 onMonthChange={setMonth}
                 mode="single"
                 showOutsideDays
-                fixedWeeks
                 className="w-full"
-                components={{
-                    DayContent: CustomDayContent
-                }}
               />
             </CardContent>
           </Card>

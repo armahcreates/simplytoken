@@ -17,9 +17,10 @@ import {
 
 interface OnboardingOverlayProps {
   isFirstLogin?: boolean;
+  onDismiss?: () => void;
 }
 
-export function OnboardingOverlay({ isFirstLogin = false }: OnboardingOverlayProps) {
+export function OnboardingOverlay({ isFirstLogin = false, onDismiss }: OnboardingOverlayProps) {
   const [showWelcome, setShowWelcome] = useState(isFirstLogin);
   const [showTooltips, setShowTooltips] = useState(false);
 
@@ -32,6 +33,9 @@ export function OnboardingOverlay({ isFirstLogin = false }: OnboardingOverlayPro
   const handleWelcomeClose = () => {
     setShowWelcome(false);
     setShowTooltips(true);
+    if (onDismiss) {
+      onDismiss();
+    }
     // Auto-hide tooltips after 10 seconds
     setTimeout(() => setShowTooltips(false), 10000);
   };
