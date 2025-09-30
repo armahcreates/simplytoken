@@ -1,6 +1,9 @@
 'use client'
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { Stepper } from '@/components/Stepper';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,18 +12,22 @@ import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { 
-  ArrowRight, 
-  ArrowLeft, 
-  Plus, 
-  X, 
-  AlertCircle, 
-  Info, 
+import {
+  ArrowRight,
+  ArrowLeft,
+  Plus,
+  X,
+  AlertCircle,
+  Info,
   Save,
   CheckCircle,
   XCircle,
-  Clock
+  Clock,
+  Loader2
 } from 'lucide-react';
 
 const steps = ["Initial Assessment", "Regulatory Compliance", "Documentation", "Readiness Dashboard"];
@@ -57,6 +64,82 @@ const StatusBadge = ({ status }: { status: string }) => {
 };
 
 export function RegulatoryCompliance() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [showAddJurisdiction, setShowAddJurisdiction] = useState(false);
+  const [newJurisdiction, setNewJurisdiction] = useState('');
+  const [jurisdictions, setJurisdictions] = useState<string[]>([
+    'United States (Federal)',
+    'New York (State)',
+    'European Union'
+  ]);
+
+  // Load saved jurisdictions from localStorage
+  useEffect(() => {
+    const savedData = localStorage.getItem('regulatoryCompliance');
+    if (savedData) {
+      try {
+        const data = JSON.parse(savedData);
+        if (data.jurisdictions) {
+          setJurisdictions(data.jurisdictions);
+        }
+      } catch (error) {
+        console.error('Error loading saved data:', error);
+      }
+    }
+  }, []);
+
+  const handleRemoveJurisdiction = (jurisdiction: string) => {
+    setJurisdictions(prev => prev.filter(j => j !== jurisdiction));
+    toast.success(`${jurisdiction} removed`);
+  };
+
+  const handleAddJurisdiction = () => {
+    if (!newJurisdiction.trim()) {
+      toast.error('Please enter a jurisdiction name');
+      return;
+    }
+    if (jurisdictions.includes(newJurisdiction.trim())) {
+      toast.error('This jurisdiction is already added');
+      return;
+    }
+    setJurisdictions(prev => [...prev, newJurisdiction.trim()]);
+    toast.success(`${newJurisdiction} added successfully`);
+    setNewJurisdiction('');
+    setShowAddJurisdiction(false);
+  };
+
+  const handleFixIssue = (requirementName: string) => {
+    toast.info(`Opening compliance wizard for: ${requirementName}`);
+    // In a real app, this would navigate to a specific compliance workflow
+  };
+
+  const handleReview = (requirementName: string) => {
+    toast.info(`Reviewing requirement: ${requirementName}`);
+    // In a real app, this would open detailed compliance information
+  };
+
+  const handleSaveProgress = async () => {
+    setIsLoading(true);
+    try {
+      const data = {
+        jurisdictions,
+        lastUpdated: new Date().toISOString()
+      };
+      localStorage.setItem('regulatoryCompliance', JSON.stringify(data));
+
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      toast.success('Progress saved successfully');
+    } catch (error) {
+      toast.error('Failed to save progress');
+      console.error('Error saving progress:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center text-sm text-muted-foreground">
@@ -83,10 +166,52 @@ export function RegulatoryCompliance() {
           <div>
             <h3 className="text-sm font-medium mb-2">Selected Jurisdictions</h3>
             <div className="flex flex-wrap gap-2">
-              <Badge className="py-1 px-3 text-sm bg-blue-100 text-blue-800 hover:bg-blue-200 font-normal">United States (Federal) <X className="ml-2 h-4 w-4 cursor-pointer" /></Badge>
-              <Badge className="py-1 px-3 text-sm bg-blue-100 text-blue-800 hover:bg-blue-200 font-normal">New York (State) <X className="ml-2 h-4 w-4 cursor-pointer" /></Badge>
-              <Badge className="py-1 px-3 text-sm bg-blue-100 text-blue-800 hover:bg-blue-200 font-normal">European Union <X className="ml-2 h-4 w-4 cursor-pointer" /></Badge>
-              <Button variant="outline" size="sm" className="font-normal"><Plus className="mr-1 h-4 w-4" /> Add Jurisdiction</Button>
+              {jurisdictions.map((jurisdiction) => (
+                <Badge
+                  key={jurisdiction}
+                  className="py-1 px-3 text-sm bg-blue-100 text-blue-800 hover:bg-blue-200 font-normal"
+                >
+                  {jurisdiction}
+                  <X
+                    className="ml-2 h-4 w-4 cursor-pointer"
+                    onClick={() => handleRemoveJurisdiction(jurisdiction)}
+                  />
+                </Badge>
+              ))}
+              <Dialog open={showAddJurisdiction} onOpenChange={setShowAddJurisdiction}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="font-normal">
+                    <Plus className="mr-1 h-4 w-4" /> Add Jurisdiction
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Add Jurisdiction</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="jurisdiction">Jurisdiction Name</Label>
+                      <Input
+                        id="jurisdiction"
+                        placeholder="e.g., California (State)"
+                        value={newJurisdiction}
+                        onChange={(e) => setNewJurisdiction(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleAddJurisdiction();
+                          }
+                        }}
+                      />
+                    </div>
+                    <div className="flex justify-end gap-2">
+                      <Button variant="outline" onClick={() => setShowAddJurisdiction(false)}>
+                        Cancel
+                      </Button>
+                      <Button onClick={handleAddJurisdiction}>Add</Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
 
@@ -157,7 +282,11 @@ export function RegulatoryCompliance() {
                       <TableCell>{req.authority}</TableCell>
                       <TableCell><StatusBadge status={req.status} /></TableCell>
                       <TableCell>
-                        <Button variant="link" className="p-0 h-auto text-sm font-semibold">
+                        <Button
+                          variant="link"
+                          className="p-0 h-auto text-sm font-semibold"
+                          onClick={() => req.status === 'Non-Compliant' ? handleFixIssue(req.requirement) : handleReview(req.requirement)}
+                        >
                           {req.status === 'Non-Compliant' ? 'Fix Issue' : 'Review'}
                         </Button>
                       </TableCell>
@@ -230,7 +359,23 @@ export function RegulatoryCompliance() {
       </Card>
 
       <div className="flex flex-col sm:flex-row justify-between items-center pt-4 gap-4">
-        <Button variant="ghost" className="w-full sm:w-auto"><Save className="mr-2 h-4 w-4" /> Save Progress</Button>
+        <Button
+          variant="ghost"
+          className="w-full sm:w-auto"
+          onClick={handleSaveProgress}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            <>
+              <Save className="mr-2 h-4 w-4" /> Save Progress
+            </>
+          )}
+        </Button>
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <Button variant="outline" asChild className="w-full sm:w-auto">
             <Link href="/asset-readiness"><ArrowLeft className="mr-2 h-4 w-4" /> Previous</Link>

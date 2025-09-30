@@ -26,7 +26,6 @@ import {
   Users,
   TrendingUp,
   Settings,
-  LogOut,
   LayoutDashboard,
   Circle,
   Archive,
@@ -201,14 +200,6 @@ export function Layout({ children }: LayoutProps) {
                 <SidebarMenuButton tooltip={{children: "Settings"}}>
                     <Settings />
                     <span>Settings</span>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-                <SidebarMenuButton tooltip={{children: "Logout"}} asChild>
-                  <a href="/login">
-                    <LogOut />
-                    <span>Logout</span>
-                  </a>
                 </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

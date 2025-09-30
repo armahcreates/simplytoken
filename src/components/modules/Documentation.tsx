@@ -1,12 +1,19 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Stepper } from '@/components/Stepper';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   ArrowLeft,
   ArrowRight,
@@ -15,7 +22,8 @@ import {
   Download,
   Eye,
   Upload,
-  Filter
+  Filter,
+  Loader2
 } from 'lucide-react';
 import {
   Select,
@@ -86,6 +94,9 @@ export function Documentation() {
   const steps = ["Initial Assessment", "Regulatory Compliance", "Documentation", "Readiness Dashboard"];
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [isUploading, setIsUploading] = useState(false);
+  const [previewDocument, setPreviewDocument] = useState<any>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const filteredTemplates = documentTemplates.filter(template => {
     const matchesSearch = template.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -93,6 +104,46 @@ export function Documentation() {
     const matchesCategory = selectedCategory === 'all' || template.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    setIsUploading(true);
+    try {
+      const file = files[0];
+      // Simulate file upload
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      // In a real app, this would upload to a server
+      toast.success(`${file.name} uploaded successfully`);
+
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } catch (error) {
+      toast.error('Failed to upload document');
+      console.error('Upload error:', error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handlePreview = (template: any) => {
+    setPreviewDocument(template);
+    toast.info(`Opening preview for: ${template.title}`);
+  };
+
+  const handleDownload = (template: any) => {
+    toast.success(`Downloading: ${template.title}`);
+    // In a real app, this would trigger a file download
+    console.log('Downloading template:', template.id);
+  };
 
   return (
     <div className="space-y-6">
@@ -116,10 +167,32 @@ export function Documentation() {
                 Access legal documents, compliance forms, and templates for your tokenization project
               </p>
             </div>
-            <Button className="w-full sm:w-auto">
-              <Upload className="mr-2 h-4 w-4" />
-              Upload Document
-            </Button>
+            <div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                className="hidden"
+                onChange={handleFileChange}
+                accept=".pdf,.doc,.docx"
+              />
+              <Button
+                className="w-full sm:w-auto"
+                onClick={handleUploadClick}
+                disabled={isUploading}
+              >
+                {isUploading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="mr-2 h-4 w-4" />
+                    Upload Document
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -183,11 +256,20 @@ export function Documentation() {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="flex-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1"
+                      onClick={() => handlePreview(template)}
+                    >
                       <Eye className="mr-2 h-3 w-3" />
                       Preview
                     </Button>
-                    <Button size="sm" className="flex-1">
+                    <Button
+                      size="sm"
+                      className="flex-1"
+                      onClick={() => handleDownload(template)}
+                    >
                       <Download className="mr-2 h-3 w-3" />
                       Download
                     </Button>
@@ -221,6 +303,46 @@ export function Documentation() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Preview Dialog */}
+      <Dialog open={!!previewDocument} onOpenChange={() => setPreviewDocument(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh]">
+          {previewDocument && (
+            <>
+              <DialogHeader>
+                <DialogTitle>{previewDocument.title}</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Badge variant="outline">{previewDocument.category}</Badge>
+                  <span className="text-sm text-muted-foreground">
+                    Last updated: {new Date(previewDocument.lastUpdated).toLocaleDateString()}
+                  </span>
+                </div>
+                <p className="text-sm text-muted-foreground">{previewDocument.description}</p>
+                <div className="border rounded-lg p-8 bg-muted/50 min-h-[400px] flex items-center justify-center">
+                  <div className="text-center">
+                    <FileText className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                    <p className="text-muted-foreground">Document preview would be displayed here</p>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      In a production environment, this would show the actual document content
+                    </p>
+                  </div>
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => setPreviewDocument(null)}>
+                    Close
+                  </Button>
+                  <Button onClick={() => handleDownload(previewDocument)}>
+                    <Download className="mr-2 h-4 w-4" />
+                    Download
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -1,4 +1,7 @@
+'use client'
+
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -172,6 +175,23 @@ export function PartnerNetwork() {
     return matchesSearch && matchesExpertise;
   });
 
+  const handleContactProvider = (provider: any) => {
+    toast.success(`Opening message thread with ${provider.name}`);
+    // In a real app, this would open a messaging interface
+    setSelectedProvider(null);
+  };
+
+  const handleRequestProposal = (provider: any) => {
+    toast.success(`Proposal request sent to ${provider.name}`);
+    // In a real app, this would send a formal proposal request
+    setSelectedProvider(null);
+  };
+
+  const handleJoinNetwork = () => {
+    toast.info('Opening network registration form...');
+    // In a real app, this would open a registration/application form
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -181,7 +201,7 @@ export function PartnerNetwork() {
             Find qualified service providers and manage your tokenization team
           </p>
         </div>
-        <Button>
+        <Button onClick={handleJoinNetwork}>
           <Users className="mr-2 h-4 w-4" />
           Join Network
         </Button>
@@ -553,15 +573,15 @@ export function PartnerNetwork() {
                 </div>
 
                 <div className="flex gap-3">
-                  <Button className="flex-1">
+                  <Button className="flex-1" onClick={() => handleContactProvider(selectedProvider)}>
                     <MessageSquare className="mr-2 h-4 w-4" />
                     Contact Provider
                   </Button>
-                  <Button variant="outline" className="flex-1">
+                  <Button variant="outline" className="flex-1" onClick={() => handleRequestProposal(selectedProvider)}>
                     <FileText className="mr-2 h-4 w-4" />
                     Request Proposal
                   </Button>
-                  <Button variant="outline">
+                  <Button variant="outline" onClick={() => toast.info('Saving to favorites...')}>
                     <Award className="h-4 w-4" />
                   </Button>
                 </div>

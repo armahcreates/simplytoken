@@ -1,4 +1,7 @@
+'use client'
+
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -128,6 +131,79 @@ const StatusBadge = ({ status }: { status: string }) => {
 export function GovernanceTools() {
   const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
   const [showNewProposal, setShowNewProposal] = useState(false);
+  const [proposalTitle, setProposalTitle] = useState('');
+  const [proposalDescription, setProposalDescription] = useState('');
+  const [proposalThreshold, setProposalThreshold] = useState('60');
+  const [proposalDeadline, setProposalDeadline] = useState('');
+  const [votedProposals, setVotedProposals] = useState<{[key: number]: 'for' | 'against'}>({});
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleVote = (proposalId: number, vote: 'for' | 'against') => {
+    setVotedProposals(prev => ({ ...prev, [proposalId]: vote }));
+    toast.success(`Vote recorded: ${vote === 'for' ? 'For' : 'Against'}`);
+  };
+
+  const handleCreateProposal = async () => {
+    if (!proposalTitle.trim()) {
+      toast.error('Please enter a proposal title');
+      return;
+    }
+    if (!proposalDescription.trim()) {
+      toast.error('Please enter a proposal description');
+      return;
+    }
+
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      toast.success('Proposal created successfully');
+      setShowNewProposal(false);
+      setProposalTitle('');
+      setProposalDescription('');
+      setProposalThreshold('60');
+      setProposalDeadline('');
+    } catch (error) {
+      toast.error('Failed to create proposal');
+      console.error('Error creating proposal:', error);
+    }
+  };
+
+  const handleUseTemplate = (template: any) => {
+    toast.success(`Applying template: ${template.name}`);
+    // In a real app, this would apply the governance template settings
+  };
+
+  const handleSaveConfiguration = async () => {
+    setIsSaving(true);
+    try {
+      // Get all form values
+      const votingThreshold = (document.getElementById('voting-threshold') as HTMLInputElement)?.value;
+      const quorum = (document.getElementById('quorum') as HTMLInputElement)?.value;
+      const votingPeriod = (document.getElementById('voting-period') as HTMLInputElement)?.value;
+      const proposalThreshold = (document.getElementById('proposal-threshold') as HTMLInputElement)?.value;
+
+      const config = {
+        votingThreshold,
+        quorum,
+        votingPeriod,
+        proposalThreshold,
+        lastUpdated: new Date().toISOString()
+      };
+
+      localStorage.setItem('governanceConfig', JSON.stringify(config));
+
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      toast.success('Configuration saved successfully');
+    } catch (error) {
+      toast.error('Failed to save configuration');
+      console.error('Error saving configuration:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -157,7 +233,12 @@ export function GovernanceTools() {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="title">Proposal Title</Label>
-                  <Input id="title" placeholder="Enter proposal title" />
+                  <Input
+                    id="title"
+                    placeholder="Enter proposal title"
+                    value={proposalTitle}
+                    onChange={(e) => setProposalTitle(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="description">Description</Label>
@@ -165,23 +246,35 @@ export function GovernanceTools() {
                     id="description"
                     placeholder="Provide a detailed description of the proposal"
                     rows={4}
+                    value={proposalDescription}
+                    onChange={(e) => setProposalDescription(e.target.value)}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="threshold">Approval Threshold (%)</Label>
-                    <Input id="threshold" type="number" defaultValue="60" />
+                    <Input
+                      id="threshold"
+                      type="number"
+                      value={proposalThreshold}
+                      onChange={(e) => setProposalThreshold(e.target.value)}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="deadline">Voting Deadline</Label>
-                    <Input id="deadline" type="date" />
+                    <Input
+                      id="deadline"
+                      type="date"
+                      value={proposalDeadline}
+                      onChange={(e) => setProposalDeadline(e.target.value)}
+                    />
                   </div>
                 </div>
                 <div className="flex justify-end gap-2">
                   <Button variant="outline" onClick={() => setShowNewProposal(false)}>
                     Cancel
                   </Button>
-                  <Button onClick={() => setShowNewProposal(false)}>
+                  <Button onClick={handleCreateProposal}>
                     Create Proposal
                   </Button>
                 </div>
@@ -248,13 +341,24 @@ export function GovernanceTools() {
                               <Progress value={proposal.quorum} className="h-2" />
                             </div>
                             <div className="flex gap-2">
-                              <Button size="sm" className="flex-1">
+                              <Button
+                                size="sm"
+                                className="flex-1"
+                                onClick={() => handleVote(proposal.id, 'for')}
+                                disabled={votedProposals[proposal.id] === 'for'}
+                              >
                                 <CheckCircle className="mr-2 h-4 w-4" />
-                                Vote For
+                                {votedProposals[proposal.id] === 'for' ? 'Voted For' : 'Vote For'}
                               </Button>
-                              <Button size="sm" variant="outline" className="flex-1">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="flex-1"
+                                onClick={() => handleVote(proposal.id, 'against')}
+                                disabled={votedProposals[proposal.id] === 'against'}
+                              >
                                 <XCircle className="mr-2 h-4 w-4" />
-                                Vote Against
+                                {votedProposals[proposal.id] === 'against' ? 'Voted Against' : 'Vote Against'}
                               </Button>
                             </div>
                           </div>
@@ -303,7 +407,9 @@ export function GovernanceTools() {
                         <span className="text-sm text-muted-foreground">
                           Used by {template.usageCount} projects
                         </span>
-                        <Button size="sm">Use Template</Button>
+                        <Button size="sm" onClick={() => handleUseTemplate(template)}>
+                          Use Template
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -476,7 +582,9 @@ export function GovernanceTools() {
                 </div>
               </div>
               <div className="flex justify-end">
-                <Button>Save Configuration</Button>
+                <Button onClick={handleSaveConfiguration} disabled={isSaving}>
+                  {isSaving ? 'Saving...' : 'Save Configuration'}
+                </Button>
               </div>
             </CardContent>
           </Card>
